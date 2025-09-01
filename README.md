@@ -56,3 +56,7 @@ The same is true for the `-d` parameter to use `sudo` to elivate. It won't use t
 The UI version is a simple Windows Forms application. I uses the same logic, though, even using the same code. The CLI parameters can be useed to prefill the fields. The rest should be self-explanitory.
 
 ![UI example screenshot](./RemoteDiskImager.png)
+
+
+## Dependencies
+This tool relies heavily on [SSH.NET](https://github.com/sshnet/SSH.NET).
