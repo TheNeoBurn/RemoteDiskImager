@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "RemoteDiskImanger": {
+      "commandName": "Project",
+      "commandLineArgs": "-s -b 8M testuser@192.168.0.1:/dev/sda1 C:\\backup\\test_sda1.img"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\RemoteDiskImagerUI\BlockDeviceInfo.cs" Link="BlockDeviceInfo.cs" />
+    <Compile Include="..\RemoteDiskImagerUI\RollingBuffer.cs" Link="RollingBuffer.cs" />
+    <Compile Include="..\RemoteDiskImagerUI\SshCommandHelper.cs" Link="SshCommandHelper.cs" />
+    <Compile Include="..\RemoteDiskImagerUI\SuCommandType.cs" Link="SuCommandType.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SSH.NET" Version="2025.0.0" />
+  </ItemGroup>
+
+</Project>
