@@ -1,8 +1,37 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RemoteDiskImanger;
 
 public class BlockDeviceInfo {
+    /// <summary>
+    /// Converts nullable long values to and from JSON.
+    /// </summary>
+    /// <remarks>Had some problems with null JSON values thus this manuell converter</remarks>
+    private class NullableLongConverter : JsonConverter<long?> {
+        public override long? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) {
+            switch (reader.TokenType) {
+                case JsonTokenType.None:
+                case JsonTokenType.Null:
+                    return null;
+                case JsonTokenType.String:
+                    string strValue = reader.GetString() ?? "";
+                    return long.TryParse(strValue, out long parsedValue) ? parsedValue : null;
+                case JsonTokenType.Number:
+                    return reader.TryGetInt64(out long longValue) ? longValue : null;
+                default:
+                    throw new JsonException($"Unexpected token parsing long. Expected Number or Null, got {reader.TokenType}.");
+            }
+        }
+        public override void Write(Utf8JsonWriter writer, long? value, JsonSerializerOptions options) {
+            if (value.HasValue) {
+                writer.WriteNumberValue(value.Value);
+            } else {
+                writer.WriteNullValue();
+            }
+        }
+    }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
     [JsonPropertyName("size")]
@@ -11,13 +40,11 @@ public class BlockDeviceInfo {
     public string Type { get; set; } = "";
     [JsonPropertyName("fstype")]
     public string? FileSystemType { get; set; } = "";
-    [JsonPropertyName("mountpoints")]
-    public string[] MountPoints { get; set; } = Array.Empty<string>();
     [JsonPropertyName("children")]
     public BlockDeviceInfo[]? Children { get; set; }
-    [JsonPropertyName("fssize")]
+    [JsonPropertyName("fssize"), JsonConverter(typeof(NullableLongConverter))]
     public long? FileSystemSize { get; set; } = null;
-    [JsonPropertyName("fsused")]
+    [JsonPropertyName("fsused"), JsonConverter(typeof(NullableLongConverter))]
     public long? FileSystemUsed { get; set; } = null;
     [JsonPropertyName("path")]
     public string Path { get; set; } = "";
@@ -25,12 +52,6 @@ public class BlockDeviceInfo {
     public bool IsRemovable { get; set; }
     [JsonPropertyName("ro")]
     public bool IsReadOnly { get; set; }
-    [JsonPropertyName("uuid")]
-    public string UUID { get; set; } = "";
-    [JsonPropertyName("serial")]
-    public string? Serial { get; set; } = null;
-    [JsonPropertyName("model")]
-    public string? Model { get; set; } = null;
 
     [JsonIgnore]
     public string HumanReadableSize => (this.FileSystemSize ?? this.Size).ToHumanReadableSize(this.FileSystemUsed);
@@ -66,7 +87,6 @@ public static class BlockDeviceInfoExtensions {
                 info.HumanReadableSize,
                 info.Type,
                 SanatizeFileSystemType(info.FileSystemType),
-                string.Join(", ", info.MountPoints.Where(mp => mp is not null))
             };
             for (int i = 0; i < row.Length; i++) {
                 widths[i] = int.Max(widths[i], row[i].Length);
@@ -91,7 +111,7 @@ public static class BlockDeviceInfoExtensions {
         Console.WriteLine();
     }
 
-    private static readonly string[] HEADERS = new string[] { "NAME", "SIZE", "TYPE", "FSTYPE", "MOUNTPOINTS" };
+    private static readonly string[] HEADERS = new string[] { "NAME", "SIZE", "TYPE", "FSTYPE" };
 
     public static void Print(this IEnumerable<BlockDeviceInfo> infos, int divider = 2) {
         (List<string[]> rows, int[] widths) = GetWidths(infos, INITIAL_INDENT);
