@@ -17,11 +17,11 @@ public static class SshCommandHelper {
         const int BLK_BUFFER_SIZE = 65536;
         const string EXECUTION_AUTHENTICATION_FAILURE = "EXECUTION_AUTHENTICATION_FAILURE";
 
-        string cmdText = "lsblk -Jbf -o FSSIZE,FSTYPE,FSUSED,LABEL,MODEL,NAME,PARTLABEL,PARTTYPE,PATH,RM,RO,SERIAL,SIZE,TYPE,UUID,MOUNTPOINTS";
+        string cmdText = "lsblk -Jbf -o FSSIZE,FSTYPE,FSUSED,LABEL,NAME,PARTTYPE,PATH,RM,RO,SIZE,TYPE";
         if (suType != SuCommandType.None) {
             switch (suType) {
                 case SuCommandType.Sudo:
-                    cmdText = $"sudo -S '{cmdText}' || echo \"{EXECUTION_AUTHENTICATION_FAILURE}\"";
+                    cmdText = $"sudo {cmdText} || echo \"{EXECUTION_AUTHENTICATION_FAILURE}\"";
                     break;
                 case SuCommandType.Su:
                     cmdText = $"su -c '{cmdText}' || echo \"{EXECUTION_AUTHENTICATION_FAILURE}\"";
@@ -94,10 +94,17 @@ public static class SshCommandHelper {
        dataStream.Position = 0;
        JsonDocument doc = await JsonDocument.ParseAsync(dataStream, cancellationToken: cancelToken);
 
-        List<BlockDeviceInfo> devices =  doc
-            .RootElement
-            .GetProperty("blockdevices")
-            .Deserialize<List<BlockDeviceInfo>>() ?? throw new Exception("Unable to parse lsblk output to get block device info!");
+        List<BlockDeviceInfo> devices;
+        try {
+            devices = doc
+                .RootElement
+                .GetProperty("blockdevices")
+                .Deserialize<List<BlockDeviceInfo>>() ?? throw new Exception("Unable to parse lsblk output to get block device info!");
+        } catch (JsonException ex) {
+            dataStream.Position = 0;
+            string json = Encoding.UTF8.GetString(dataStream.ToArray());
+            throw new Exception("Unable to parse lsblk output to get block device info!\n" + json, ex);
+        }
 
         return devices;
     }
@@ -121,7 +128,7 @@ public static class SshCommandHelper {
         if (suType != SuCommandType.None) {
             switch (suType) {
                 case SuCommandType.Sudo:
-                    cmdText = $"sudo -S '{cmdText}' || echo \"{EXECUTION_AUTHENTICATION_FAILURE}\"";
+                    cmdText = $"sudo {cmdText} || echo \"{EXECUTION_AUTHENTICATION_FAILURE}\"";
                     break;
                 case SuCommandType.Su:
                     cmdText = $"su -c '{cmdText}' || echo \"{EXECUTION_AUTHENTICATION_FAILURE}\"";

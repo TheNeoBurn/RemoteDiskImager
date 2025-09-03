@@ -37,11 +37,12 @@
             lstDevices.Columns.AddRange(new ColumnHeader[] { colPath, colSize, colType });
             lstDevices.FullRowSelect = true;
             lstDevices.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-            lstDevices.Location = new Point(12, 12);
+            lstDevices.Location = new Point(10, 9);
+            lstDevices.Margin = new Padding(3, 2, 3, 2);
             lstDevices.MultiSelect = false;
             lstDevices.Name = "lstDevices";
             lstDevices.ShowGroups = false;
-            lstDevices.Size = new Size(776, 369);
+            lstDevices.Size = new Size(680, 278);
             lstDevices.TabIndex = 0;
             lstDevices.UseCompatibleStateImageBehavior = false;
             lstDevices.View = View.Details;
@@ -50,7 +51,7 @@
             // colPath
             // 
             colPath.Text = "Path";
-            colPath.Width = 480;
+            colPath.Width = 320;
             // 
             // colSize
             // 
@@ -67,9 +68,10 @@
             btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnOk.DialogResult = DialogResult.OK;
             btnOk.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnOk.Location = new Point(685, 387);
+            btnOk.Location = new Point(599, 290);
+            btnOk.Margin = new Padding(3, 2, 3, 2);
             btnOk.Name = "btnOk";
-            btnOk.Size = new Size(103, 51);
+            btnOk.Size = new Size(90, 38);
             btnOk.TabIndex = 1;
             btnOk.Text = "Select";
             btnOk.UseVisualStyleBackColor = true;
@@ -80,9 +82,10 @@
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             btnCancel.DialogResult = DialogResult.Cancel;
             btnCancel.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            btnCancel.Location = new Point(12, 387);
+            btnCancel.Location = new Point(10, 290);
+            btnCancel.Margin = new Padding(3, 2, 3, 2);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(103, 51);
+            btnCancel.Size = new Size(90, 38);
             btnCancel.TabIndex = 2;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
@@ -91,13 +94,14 @@
             // DeviceSelectForm
             // 
             this.AcceptButton = btnOk;
-            this.AutoScaleDimensions = new SizeF(8F, 20F);
+            this.AutoScaleDimensions = new SizeF(7F, 15F);
             this.AutoScaleMode = AutoScaleMode.Font;
             this.CancelButton = btnCancel;
-            this.ClientSize = new Size(800, 450);
+            this.ClientSize = new Size(700, 338);
             this.Controls.Add(btnCancel);
             this.Controls.Add(btnOk);
             this.Controls.Add(lstDevices);
+            this.Margin = new Padding(3, 2, 3, 2);
             this.Name = "DeviceSelectForm";
             this.Text = "DeviceSelectForm";
             this.ResumeLayout(false);
